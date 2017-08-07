@@ -19,18 +19,23 @@ class Sql
     protected $orderBy;
     protected $limit;
 
-    public function select ($fields)
+    protected function select ($fields = '')
     {
-        if ($this->checkArray($fields))
+        if (empty($fields))
         {
-            if (in_array("*", $fields))
-            {
-                throw new Exception('Forbidden character');
-            }
-
-            $this->select = 'SELECT '.(!empty($this->distinct) ? $this->distinct : '').implode(', ', $fields).' FROM ';
-            return $this;
+            $fields = '*';
         }
+        else
+        {
+            if ($this->checkArray($fields))
+            {
+                $fields = implode(', ', $fields);
+            }
+        }
+
+        $this->select = 'SELECT '.(!empty($this->distinct) ? $this->distinct : '').$fields.' FROM ';
+        return $this;
+
     }
 
     protected function insert ()
@@ -51,13 +56,13 @@ class Sql
         return $this;
     }
 
-    public function from ($table, $alias = ' ')
+    protected function from ($table)
     {
-       $this->from = $table.$alias;
+       $this->from = $table;
        return $this;
     }
 
-    public function where ($condition)
+    protected function where ($condition)
     {
         $this->where = ' WHERE '.key($condition).' = '."'".$condition[key($condition)]."'";
         return $this;
@@ -91,39 +96,44 @@ class Sql
         }
     }
 
-    public function distinct ()
+    protected function distinct ()
     {
         $this->distinct = 'DISTINCT ';
         return $this;
     }
 
-    public function join ($type, $table, $on = '')
+    protected function join ($type, $table, $on = '')
     {
        $this->join = ' '.strtoupper($type).' JOIN '.$table.(!empty($on) ? ' ON '.$on : '');
        return $this;
     }
 
-    public function groupBy ($field)
+    protected function groupBy ($field)
     {
         $this->groupBy = ' GROUP BY '.$field;
         return $this;
     }
 
-    public function having ($arg) {
+    protected function having ($arg) {
          $this->having = ' HAVING '.$arg;
          return $this;
     }
 
-    public function orderBy ($field, $sort = 'ASC')
+    protected function orderBy ($field, $sort = 'ASC')
     {
         $this->orderBy = ' ORDER BY '.$field.' '.strtoupper($sort);
         return $this;
     }
 
-    public function limit ($num, $offset = '')
+    protected function limit ($num, $offset = '')
     {
         $this->limit = ' LIMIT '.$num.(!empty($offset) ? ','.$offset : '');
         return $this;
+    }
+
+    protected function getColumsName ($table)
+    {
+        return 'SHOW COLUMNS FROM '.$table;
     }
 
     protected function checkArray ($array)
@@ -142,7 +152,7 @@ class Sql
         return strpos($name, "'") !== false ? $name : "'" . $name . "'";
     }
 
-    public function execute()
+    protected function execute()
     {
         switch ($this)
         {

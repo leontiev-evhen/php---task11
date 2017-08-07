@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-        <title>Course PHP -  Task 10</title>
+        <title>Course PHP -  Task 11</title>
 
         <!-- Bootstrap -->
         <link href="<?php echo PATH;?>css/bootstrap.min.css" rel="stylesheet">
@@ -34,47 +34,24 @@
 
             <?php } ?>
             <div class="row">
-                <h2>Task 10</h2>
-                <div class="col-md-12">
-                    <h3>Distinct:</h3>
-                    <?php  echo $distinct;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>INNER JOIN:</h3>
-                    <?php  echo $innerJoin;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>LEFT JOIN:</h3>
-                    <?php  echo $leftJoin;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>RIGHT JOIN:</h3>
-                    <?php  echo $rightJoin;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>CROSS JOIN:</h3>
-                    <?php  echo $crossJoin;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>NATURAL JOIN:</h3>
-                    <?php  echo $naturalJoin;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>Group by:</h3>
-                    <?php  echo $groupBy;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>Having:</h3>
-                    <?php  echo $having;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>Order:</h3>
-                    <?php  echo $orderBy;?>
-                </div>
-                <div class="col-md-12">
-                    <h3>Limit:</h3>
-                    <?php  echo $limit;?>
-                </div>
+                <h2>Task 11</h2>
+                <?php
+                if(!empty($result))
+                {
+                    if (is_array($result))
+                    {
+                        foreach ($result as $key=>$item)
+                        {
+                            echo $key .' => '. $item .'<br>';
+                        }
+                    }
+                    else
+                    {
+                        echo $result;
+                    }
+                }
+
+               ?>
             </div>
 
         </div>
