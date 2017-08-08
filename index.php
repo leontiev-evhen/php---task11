@@ -9,10 +9,25 @@ try
     });
 
     $class = new MyTest();
-    $class->find(['key' => 'user11']);
-    $class->key = 'user11';
-    $class->data = 'test6';
-    $result = $class->save();
+
+    /*============= select =====================*/
+    $result = $class->find(['key' => 'user11']);
+
+    /*============= insert =====================*/
+
+   // $class->key = 'user11';
+   // $class->data = 'test';
+   // $result = $class->save();
+
+    /*============= update =====================*/
+   // $class->find(['key' => 'user11']);
+   // $class->key = 'user11-2';
+   // $class->data = 'test2';
+   // $result = $class->save();
+
+    /*============= delete =====================*/
+   // $class->find(['key' => 'user11']);
+   // $result = $class->delete();
 }
 catch (Exception $e)
 {
