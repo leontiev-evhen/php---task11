@@ -11,13 +11,8 @@ class Sql
     protected $from;
     protected $values;
     protected $set;
-    protected $distinct;
-    protected $join;
     protected $where;
-    protected $groupBy;
-    protected $having;
-    protected $orderBy;
-    protected $limit;
+
 
     protected function select ($fields = '')
     {
@@ -58,19 +53,26 @@ class Sql
 
     protected function from ($table)
     {
-       $this->from = $table;
-       return $this;
+        if ($this->checkIssetField($table))
+        {
+            $this->from = $table;
+            return $this;
+        }
+
     }
 
     protected function where ($condition)
     {
-        $this->where = ' WHERE '.key($condition).' = '."'".$condition[key($condition)]."'";
-        return $this;
+        if ($this->checkIssetField($condition))
+        {
+            $this->where = ' WHERE '.key($condition).' = '."'".$condition[key($condition)]."'";
+            return $this;
+        }
     }
 
     protected function set ($fields)
     {
-        if ($this->checkArray($fields))
+        if ($this->checkArray($fields) && $this->checkIssetField($fields))
         {
             foreach($fields as $key=>$val) {
                 $arr[] = $key.' = '."'".$val."'";
@@ -83,7 +85,7 @@ class Sql
 
     protected function values ($set)
     {
-        if ($this->checkArray($set))
+        if ($this->checkArray($set) && $this->checkIssetField($set))
         {
             foreach ($set as $key=>$value) {
                 $aSet[$key] = $this->quoteSimpleColumnName($value);
@@ -96,44 +98,12 @@ class Sql
         }
     }
 
-    protected function distinct ()
-    {
-        $this->distinct = 'DISTINCT ';
-        return $this;
-    }
-
-    protected function join ($type, $table, $on = '')
-    {
-       $this->join = ' '.strtoupper($type).' JOIN '.$table.(!empty($on) ? ' ON '.$on : '');
-       return $this;
-    }
-
-    protected function groupBy ($field)
-    {
-        $this->groupBy = ' GROUP BY '.$field;
-        return $this;
-    }
-
-    protected function having ($arg) {
-         $this->having = ' HAVING '.$arg;
-         return $this;
-    }
-
-    protected function orderBy ($field, $sort = 'ASC')
-    {
-        $this->orderBy = ' ORDER BY '.$field.' '.strtoupper($sort);
-        return $this;
-    }
-
-    protected function limit ($num, $offset = '')
-    {
-        $this->limit = ' LIMIT '.$num.(!empty($offset) ? ','.$offset : '');
-        return $this;
-    }
-
     protected function getColumsName ($table)
     {
-        return 'SHOW COLUMNS FROM '.$table;
+        if ($this->checkIssetField($table))
+        {
+            return 'SHOW COLUMNS FROM '.$table;
+        }
     }
 
     protected function checkArray ($array)
@@ -144,6 +114,18 @@ class Sql
         else
         {
             throw new Exception('argument is not array');
+        }
+    }
+
+    protected function checkIssetField ($field)
+    {
+        if (empty($field))
+        {
+            throw new Exception('Field can not be empty in the function: '.debug_backtrace()[1]['function'].'($arg)');
+        }
+        else
+        {
+            return true;
         }
     }
 
@@ -160,7 +142,7 @@ class Sql
                 return $this->insert.$this->from.$this->values;
 
             case !empty($this->select):
-                return $this->select.$this->from.$this->values.$this->join.$this->where.$this->groupBy.$this->having.$this->orderBy.$this->limit;
+                return $this->select.$this->from.$this->values.$this->where;
 
             case !empty($this->update):
                 return $this->update.$this->from.$this->set.$this->where;

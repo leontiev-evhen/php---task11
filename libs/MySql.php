@@ -88,6 +88,7 @@ class MySql extends Sql
     {
         if ($this->checkArray($fields))
         {
+            $aFields = [];
             foreach ($fields as $key=>$field)
             {
                 $key = strpos($key, "`") !== false ? $key : "`" . $key . "`";

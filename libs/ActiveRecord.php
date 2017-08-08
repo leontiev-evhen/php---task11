@@ -10,20 +10,20 @@ class ActiveRecord
     private $db;
     private $condition;
     private $arrayFields;
-    public $arrayColumns = [];
+    private $arrayColumns = [];
     
     public function __construct ()
     {
-        $this->db = Database::load(TYPE_DB);
+        $this->loadDataBase();
         $this->arrayColumns = $this->getColumsName();
     }
 
-    public function __set($name, $value)
+    public function __set ($name, $value)
     {
         $this->arrayColumns[$name] = $value;
     }
 
-    public function __get($name)
+    public function __get ($name)
     {
         if (array_key_exists($name, $this->arrayColumns))
         {
@@ -36,6 +36,11 @@ class ActiveRecord
     }
 
     public static function tableName (){}
+
+    private function loadDataBase ()
+    {
+        $this->db = Database::load(TYPE_DB);
+    }
 
     public function save ()
     {
@@ -50,12 +55,24 @@ class ActiveRecord
         }
     }
 
-    public function find ($condition)
+    public function find ($condition = '')
     {
-        if ($this->db->select()->from(static::tableName())->where($condition)->execute())
+        if (!empty($condition))
         {
-            $this->condition = $condition;
-            $this->db = Database::load(TYPE_DB);
+            if ($result = $this->db->select()->from(static::tableName())->where($condition)->execute())
+            {
+                $this->condition = $condition;
+                $this->loadDataBase();
+                return $result;
+            }
+            else
+            {
+                throw new Exception('FUNCTION FIND(): nothing find');
+            }
+        }
+        else
+        {
+            throw new Exception('ERROR FUNCTION FIND(): Argument does not be empty');
         }
     }
 
@@ -64,9 +81,9 @@ class ActiveRecord
         return $this->db->update()->from(static::tableName())->set($this->arrayFields)->where($this->condition)->execute();
     }
 
-    public function insert ()
+    public function insert()
     {
-        return $this->db->insert()->from(static::tableName())->values($this->arrayFields)->execute();
+        return $res = $this->db->insert()->from(static::tableName())->values($this->arrayFields)->execute();
     }
 
     public function delete ()
